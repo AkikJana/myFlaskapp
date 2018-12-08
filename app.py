@@ -5,6 +5,15 @@ from passlib.hash import sha256_crypt
 
 app=Flask(__name__)
 
+#config MySql
+app.config['MYSQL_HOST']='localhost'
+app.config['MYSQL_USER']='root'
+app.config['MYSQL_PASSWORD']=''
+app.config['MYSQL_DB']='myflaskapp'
+app.config['MYSQL_CURSORCLASS']='DictCursor'
+#initaialize mysql
+mysql=MySQL(app)
+
 @app.route('/')
 def index():
 	return render_template('home.html')
@@ -24,6 +33,23 @@ class RegisterForm(Form):
 def register():
 	form=RegisterForm(request.form)
 	if request.method=='POST' and form.validate():
+		name=form.name.data
+		email=form.email.data
+		username=form.username.data
+		password=sha256_crypt.encrypt(str(form.password.data))
+
+		#create cursor 
+		cur=mysql.connection.cursor()
+		cur.execute("INSERT INTO users(name,email,username,password) VALUES(%s %s %s %s)",(name,email,username,password))
+		#commit to the database
+		mysql.connection.commit()
+
+		#close connection
+		cur.close()
+
+		flash('You are now registerred','success')
+		redirect(url_for('index'))
+
 		return render_template('register.html',form=form)
 	return render_template('register.html',form=form)
 
