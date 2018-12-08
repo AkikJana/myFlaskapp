@@ -40,7 +40,7 @@ def register():
 
 		#create cursor 
 		cur=mysql.connection.cursor()
-		cur.execute("INSERT INTO users(name,email,username,password) VALUES(%s %s %s %s)",(name,email,username,password))
+		cur.execute("INSERT INTO users(name,email,username,password) VALUES(%s, %s, %s, %s)",(name,email,username,password))
 		#commit to the database
 		mysql.connection.commit()
 
@@ -55,4 +55,5 @@ def register():
 
 
 if __name__=='__main__':
+	app.secret_key='hocusphocus'
 	app.run(debug=True)
